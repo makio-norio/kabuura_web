@@ -9,7 +9,25 @@ def diagnose(df):
     # print(df.head())
     # print("=== df.dtypes ===")
     # print(df.dtypes)
+    # 列名を統一
+    df = df.rename(columns={
+        # 日付
+        "Date": "日付",
+        "日付け": "日付",
+        "timestamp": "日付",
 
+        # 終値
+        "Close": "終値",
+        "終値（円）": "終値",
+        "終値価格": "終値",
+
+        # 出来高
+        "Volume": "出来高",
+        "出来高（株）": "出来高",
+        "出来高(株)": "出来高",
+        "出来高出来高": "出来高",  # たまに変なCSVがある
+        "volume": "出来高",
+    })
     # カンマ除去 → float化 
     cols = ["終値", "出来高"]
     for c in cols:

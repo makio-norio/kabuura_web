@@ -23,5 +23,10 @@
     {{ table_html | safe }}
 {% endif %}
 
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
+
+
 </body>
 </html>

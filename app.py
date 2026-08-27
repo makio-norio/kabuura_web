@@ -14,7 +14,11 @@ def index():
 # @app.route ルート定義
 @app.route("/upload", methods=["POST"])
 # データ処理＆表示
-def upload():    
+def upload(): 
+    # ファイル未選択チェック
+    if 'csv_file' not in request.files or request.files['csv_file'].filename == '':
+        return render_template('index.html', table_html=None, error="ファイルが選択されていません")
+       
     file = request.files["csv_file"]
     df = pd.read_csv(file)
     
@@ -69,5 +73,5 @@ def clear():
 
 # 実行（ローカル用）
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
 
