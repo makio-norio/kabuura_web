@@ -11,7 +11,7 @@ def diagnose(df):
     # print(df.dtypes)
 
     # カンマ除去 → float化 
-    cols = ["終値", "出来高", "5日平均", "25日平均", "75日平均"]
+    cols = ["終値", "出来高"]
     for c in cols:
         df[c] = df[c].str.replace(",", "").astype(float)
 
@@ -20,7 +20,8 @@ def diagnose(df):
     df = df.sort_values("日付").reset_index(drop=True)
 
     # ma25乖離率
-    df["MA25_dis"] = (df["終値"] - df["25日平均"]) / df["25日平均"] * 100
+    df["MA25"] = df["終値"].rolling(25).mean()
+    df["MA25_dis"] = (df["終値"] - df["MA25"]) / df["MA25"] * 100
     df["MA25_dis_type"] = None
     df.loc[df["MA25_dis"] < -12, "MA25_dis_type"] = "低迷ゾーン"
     df.loc[(df["MA25_dis"] >= -12) & (df["MA25_dis"] < -7), "MA25_dis_type"] = "かなり下"

@@ -33,10 +33,10 @@ def upload():
         "vol_type",
         "RSI14_type",
     ]].rename(columns={
-        "level": "MACD判定",
-        "MA25_dis_type": "25日乖離判定",
-        "vol_type": "出来高判定",
-        "RSI14_type": "RSI判定",
+        "level": "MACD",
+        "MA25_dis_type": "25日乖離",
+        "vol_type": "出来高",
+        "RSI14_type": "RSI",
     })
 
     # 色付け（Styler）
@@ -53,9 +53,9 @@ def upload():
                 "終値": "{:.2f}",
             })
             .apply(color_row, axis=1)  # 行色（MACD level）
-            .map(color_rsi, subset=["RSI判定"])  # RSIセル
-            .map(color_ma25, subset=["25日乖離判定"])  # MA25乖離セル
-            .map(color_vol, subset=["出来高判定"])  # volセル
+            .map(color_rsi, subset=["RSI"])  # RSIセル
+            .map(color_ma25, subset=["25日乖離"])  # MA25乖離セル
+            .map(color_vol, subset=["出来高"])  # volセル
             .set_properties(**{"text-align": "center"})
     )
 
