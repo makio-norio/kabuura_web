@@ -87,8 +87,7 @@ def diagnose(df):
         ) if r.name >= 1 else "",
         axis=1
     )
-    print("=== df.head() ===")
-    print(df.head()) 
+    
     df["candle3"] = df.apply(
         lambda r: candlestick_type3(
             df.loc[r.name - 2, "Open"],    # 2日前
@@ -107,8 +106,4 @@ def diagnose(df):
         axis=1
     )
 
-    # print("=== df.columns ===")
-    # print(df.columns)
-    # print("=== df.head() ===")
-    # print(df.head())       
     return df

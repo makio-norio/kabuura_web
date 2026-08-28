@@ -88,4 +88,4 @@ def candlestick_type3(prev2_open,prev2_close,prev2_high,prev2_low,prev1_open,pre
     if prev2_close < prev2_open and prev1_close < prev1_open and close < open :
         if prev2_high > prev1_high > high and prev2_low > prev1_low > low :
             return "🤢三羽烏"
-    return ""
+    return "なし"
