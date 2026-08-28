@@ -6,26 +6,27 @@
 </head>
 <body>
 
-<h2>CSVアップロード</h2>
+    <h2>株うら</h2>
 
-<form action="/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="csv_file">
-    <button type="submit">読み込む</button>
-</form>
+    <form action="/upload" method="POST">
+        <label>銘柄コード（4桁）:</label>
+        <input type="text" name="code" maxlength="4" required>
+        <button type="submit">確定</button>
+    </form>
 
-<form action="/clear" method="GET">
-    <button type="submit">クリアする</button>
-</form>
+    <form action="/clear" method="GET">
+        <button type="submit">クリアする</button>
+    </form>
 
 
-{% if table_html %}
-    <h3>読み込み結果</h3>
-    {{ table_html | safe }}
-{% endif %}
+    {% if result %}
+        <h2>占い結果</h2>
+        <p style="white-space: pre-line;">{{ result }}</p>
+    {% endif %}
 
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
 
 
 </body>
