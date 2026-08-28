@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import re
 import pandas as pd
 import yfinance as yf
 from logic import diagnose
@@ -21,11 +22,11 @@ def upload():
     error = None
     code = request.form.get("code", "").strip()
 
-    # 4桁チェック
-    if not (code.isdigit() and len(code) == 4):
-        error = "銘柄コードは4桁の数字で入力してください"
+    # 半角英数字4文字のみ
+    if not re.fullmatch(r"[0-9A-Za-z]{4}", code):
+        error = "銘柄コードは半角英数字4文字で入力してください"
         return render_template("index.html", result=None, error=error)
-
+    
     # 日本株のティッカー（例：7203.T）
     ticker = f"{code}.T"
 

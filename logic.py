@@ -1,5 +1,5 @@
 import pandas as pd
-from indicators import calc_rsi
+from indicators import (calc_rsi,candlestick_type1,candlestick_type2,candlestick_type3,)
 
 def diagnose(df):
     
@@ -63,6 +63,49 @@ def diagnose(df):
     df.loc[(df["vol_dis"] > -20) & (df["vol_dis"] < 20), "vol_type"] = "変化なし"
     df.loc[(df["vol_dis"] <= -20) & (df["vol_dis"] > -50), "vol_type"] = "減ってる"
     df.loc[df["vol_dis"] <= -50, "vol_type"] = "かなり減"
+
+    # ローソク足
+    df["candle1"] = df.apply(
+        lambda r: candlestick_type1(
+            r["Open"],
+            r["Close"],
+            r["High"],
+            r["Low"],   
+        ),
+        axis=1
+    )
+    df["candle2"] = df.apply(
+        lambda r: candlestick_type2(
+            df.loc[r.name - 1, "Open"],    # 前日
+            df.loc[r.name - 1, "Close"],
+            df.loc[r.name - 1, "High"],
+            df.loc[r.name - 1, "Low"],
+            r["Open"],                     # 当日
+            r["Close"],
+            r["High"],
+            r["Low"],   
+        ) if r.name >= 1 else "",
+        axis=1
+    )
+    print("=== df.head() ===")
+    print(df.head()) 
+    df["candle3"] = df.apply(
+        lambda r: candlestick_type3(
+            df.loc[r.name - 2, "Open"],    # 2日前
+            df.loc[r.name - 2, "Close"],
+            df.loc[r.name - 2, "High"],
+            df.loc[r.name - 2, "Low"],
+            df.loc[r.name - 1, "Open"],    # 前日
+            df.loc[r.name - 1, "Close"],
+            df.loc[r.name - 1, "High"],
+            df.loc[r.name - 1, "Low"],
+            r["Open"],                     # 当日
+            r["Close"],
+            r["High"],
+            r["Low"],   
+        ) if r.name >= 2 else "",
+        axis=1
+    )
 
     # print("=== df.columns ===")
     # print(df.columns)
