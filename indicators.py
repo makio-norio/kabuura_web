@@ -76,7 +76,7 @@ def candlestick_type2(prev1_open, prev1_close, prev1_high, prev1_low,
             strength = "超強"
         return f"😨陰の二兵({strength})"
 
-    return ""
+    return "なし"
 
 def candlestick_type3(prev2_open,prev2_close,prev2_high,prev2_low,prev1_open,prev1_close,prev1_high,prev1_low,open,close,high,low):
     # c1 → 3日前, c2 → 2日前, c3 → 当日
