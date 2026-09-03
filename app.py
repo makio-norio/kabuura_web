@@ -46,7 +46,7 @@ def upload():
 
         # 編集
         df = diagnose(df)
-
+        
         # 出力用表示
         result = output(df)
         

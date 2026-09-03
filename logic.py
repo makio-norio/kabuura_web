@@ -1,5 +1,5 @@
 import pandas as pd
-from indicators import (calc_rsi,candlestick_type1,candlestick_type2,candlestick_type3,)
+from indicators import (calc_rsi,candlestick_type1,candlestick_type2,candlestick_type3)
 
 def diagnose(df):
     
@@ -47,13 +47,13 @@ def diagnose(df):
     }
     df["level_color"] = df["level"].map(level_colors)
 
-    df["RSI14"] = calc_rsi(df["Close"], 14)
-    df["RSI14_type"] = None 
-    df.loc[(df["RSI14"] >= 70) , "RSI14_type"] = "かなり買われ"
-    df.loc[(df["RSI14"] >= 55) & (df["RSI14"] < 70), "RSI14_type"] = "やや買われ"
-    df.loc[(df["RSI14"] >= 45) & (df["RSI14"] < 55), "RSI14_type"] = "中立"
-    df.loc[(df["RSI14"] >= 30) & (df["RSI14"] < 45), "RSI14_type"] = "やや売られ"
-    df.loc[(df["RSI14"] >= 0) & (df["RSI14"] < 30) , "RSI14_type"] = "かなり売られ"
+    df["RSI"] = calc_rsi(df["Close"], 5)
+    df["RSI_type"] = None 
+    df.loc[(df["RSI"] >= 70) , "RSI_type"] = "かなり買われ"
+    df.loc[(df["RSI"] >= 55) & (df["RSI"] < 70), "RSI_type"] = "やや買われ"
+    df.loc[(df["RSI"] >= 45) & (df["RSI"] < 55), "RSI_type"] = "中立"
+    df.loc[(df["RSI"] >= 30) & (df["RSI"] < 45), "RSI_type"] = "やや売られ"
+    df.loc[(df["RSI"] >= 0) & (df["RSI"] < 30) , "RSI_type"] = "かなり売られ"
 
     df["vol_ma5"] = df["Volume"].rolling(5).mean()
     df["vol_dis"] = (df["Volume"] - df["vol_ma5"]) / df["vol_ma5"] * 100
@@ -105,5 +105,48 @@ def diagnose(df):
         ) if r.name >= 2 else "",
         axis=1
     )
+
+    df.loc[
+        (df["level"] == 3) &
+        (df["MA25_dis_type"].isin(["ちょい上", "やや上", "かなり上"])) &
+        (df["vol_type"].isin(["増えてる", "かなり増"])) &
+        (df["RSI_type"].isin(["中立", "やや買われ"])),
+        "composite_type"
+    ] = "上昇のはじまりかもしれません"
+    df.loc[
+        (df["MA25_dis_type"].isin(["ちょい下", "やや下"])) &
+        (df["level"].isin([4, 5])) &
+        (df["RSI_type"].isin(["やや売られ", "かなり売られ"])) &
+        (df["vol_type"].isin(["減ってる", "かなり減"])),
+        "composite_type"
+    ] = "押し目かもしれませんがそのまま下がることも。。。"
+    df.loc[
+        (df["MA25_dis_type"].isin(["かなり上", "過熱ゾーン"])) &
+        (df["level"] == 5) &
+        (df["RSI_type"] == "かなり買われ") &
+        (df["vol_type"] == "かなり増"),
+        "composite_type"
+    ] = "天井圏かもしれません。過熱に注意しましょう"
+    df.loc[
+        (df["MA25_dis_type"].isin(["ちょい上", "やや上"])) &
+        (df["level"].isin([4, 3, 2])) &
+        (df["vol_type"].isin(["減ってる", "変化なし"])),
+        "composite_type"
+    ] = "上昇の終わりでしょう"
+    df.loc[
+        (df["MA25_dis_type"].isin(["やや下", "かなり下"])) &
+        (df["level"].isin([3, 4])) &
+        (df["RSI_type"].isin(["やや買われ", "かなり買われ"])) &
+        (df["vol_type"] == "かなり増"),
+        "composite_type"
+    ] = "だまし上げの可能性があり。注意しましょう"
+    df.loc[
+        (df["MA25_dis_type"] == "低迷ゾーン") &
+        (df["level"] == 1) &
+        (df["RSI_type"] == "かなり売られ") &
+        (df["vol_type"].isin(["かなり減", "減ってる"])),
+        "composite_type"
+    ] = "大底からの一筋の光がみえます"
+    df["composite_type"] = df["composite_type"].fillna("中立（様子見）")
 
     return df

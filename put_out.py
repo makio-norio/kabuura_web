@@ -3,17 +3,22 @@ import pandas as pd
 def output(df):
     lines = []
 
+
+    line = (
+        f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}\n"
+    )
+    lines.append(line)
+
     # 直近5日分を取り出す（足りないときはあるだけ）
     n = min(5, len(df))
     target = df.iloc[-n:]   # 例：[-5:] → 5日分
-
     for _, row in target[::-1].iterrows():  # 新しい順に並べる
         line = (
             f"日付：{row['Date'].strftime('%m/%d')}\n"
-            f"終値：{row['Close']:.0f}円　"
+            f"終値：{row['Close']:.0f}円({row["MA25_dis_type"]})　"
             f"MACD_level：{row['level']}　"
             f"出来高：{row['Volume']:.0f}（{row['vol_type']}）　"
-            f"RSI：{row['RSI14']:.0f}（{row['RSI14_type']}）　"
+            f"RSI：{row['RSI']:.0f}（{row['RSI_type']}）　\n"
             f"ローソク足１：{row['candle1']}　"
             f"ローソク足２：{row['candle2']}　"
             f"ローソク足３：{row['candle3']}"

@@ -89,3 +89,67 @@ def candlestick_type3(prev2_open,prev2_close,prev2_high,prev2_low,prev1_open,pre
         if prev2_high > prev1_high > high and prev2_low > prev1_low > low :
             return "🤢三羽烏"
     return "なし"
+
+def composite_fortune(ma25, macd_level, rsi_type, vol_type):
+    # 上昇初動
+    if macd_level == 3 and ma25 in ["ちょい上", "やや上", "かなり上"] \
+       and vol_type in ["増えてる", "かなり増"] \
+       and rsi_type in ["中立", "やや買われ"]:
+        return "上昇初動（本命）"
+
+    # 押し目
+    if ma25 in ["ちょい下", "やや下"] \
+       and macd_level in [4, 5] \
+       and rsi_type in ["やや売られ", "かなり売られ"] \
+       and vol_type in ["減ってる", "かなり減"]:
+        return "押し目（買い場候補）"
+
+    # 過熱注意
+    if ma25 in ["かなり上", "過熱ゾーン"] \
+       and macd_level == 5 \
+       and rsi_type == "かなり買われ" \
+       and vol_type == "かなり増":
+        return "過熱注意（天井圏）"
+
+    # 失速
+    if ma25 in ["ちょい上", "やや上"] \
+       and macd_level in [4, 3, 2] \
+       and vol_type in ["減ってる", "変化なし"]:
+        return "失速（上昇の終わり）"
+
+    # 逆行高
+    if ma25 in ["やや下", "かなり下"] \
+       and macd_level in [3, 4] \
+       and rsi_type in ["やや買われ", "かなり買われ"] \
+       and vol_type in ["かなり増"]:
+        return "逆行高（危険）"
+
+    # 大底候補
+    if ma25 == "低迷ゾーン" \
+       and macd_level == 1 \
+       and rsi_type == "かなり売られ" \
+       and vol_type in ["かなり減", "減ってる"]:
+        return "大底候補（反発前）"
+
+    return "中立（様子見）"
+
+def fortune_text(type_name):
+    if type_name == "上昇初動（本命）":
+        return "上昇初動です。位置も良く、出来高の裏付けもあり、勢いが出始めています。短期的には上方向を試しやすい展開です。"
+
+    if type_name == "押し目（買い場候補）":
+        return "上昇トレンド中の押し目です。RSIが冷えて出来高も枯れており、反発しやすい位置です。"
+
+    if type_name == "過熱注意（天井圏）":
+        return "過熱ゾーンです。勢いは強いものの、買われすぎと出来高急増が重なり、天井圏の可能性があります。"
+
+    if type_name == "失速（上昇の終わり）":
+        return "上昇が失速しています。出来高が減り、勢いが弱まっています。短期的には注意が必要です。"
+
+    if type_name == "逆行高（危険）":
+        return "位置が悪い中で出来高だけ増えて上昇しています。だまし上げの可能性があり注意が必要です。"
+
+    if type_name == "大底候補（反発前）":
+        return "低迷ゾーンで売りが枯れています。反発の可能性がありますが、トレンドは弱いため慎重に。"
+
+    return "特筆すべきシグナルはなく、中立です。"
