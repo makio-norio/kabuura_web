@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from indicators import (calc_rsi,candlestick_type1,candlestick_type2,candlestick_type3)
 
 def diagnose(df):
@@ -24,7 +25,25 @@ def diagnose(df):
     df.loc[(df["MA25_dis"] >= 3) & (df["MA25_dis"] < 7), "MA25_dis_type"] = "やや上"
     df.loc[(df["MA25_dis"] >= 7) & (df["MA25_dis"] < 12), "MA25_dis_type"] = "かなり上"
     df.loc[df["MA25_dis"] >= 12, "MA25_dis_type"] = "過熱ゾーン"
-     
+
+    # ma5
+    df["MA5"] = df["Close"].rolling(5).mean()
+    df["MA5_slope_pct_3d"] = df["MA5"].pct_change(3) * 100 / 3 
+    df["MA5_slope_std"] = df["MA5_slope_pct_3d"].rolling(10, min_periods=10).std()
+    score = df["MA5_slope_pct_3d"] / df["MA5_slope_std"]
+    conditions = [
+        (score < -2.0),
+        (score < -0.5),
+        (score < 0.5) ,
+        (score < 2.0),
+    ]
+    choices = [ "強い下降","ゆるやか下降","よこよこ","ゆるやか上昇"]
+    df["MA5_score_type"] = np.select(
+        conditions,
+        choices,
+        default="強い上昇",
+    )
+    
     # macd
     df["EMA12"] = df["Close"].ewm(span=12).mean()
     df["EMA26"] = df["Close"].ewm(span=26).mean()
@@ -112,7 +131,7 @@ def diagnose(df):
         (df["vol_type"].isin(["増えてる", "かなり増"])) &
         (df["RSI_type"].isin(["中立", "やや買われ"])),
         "composite_type"
-    ] = "上昇のはじまりかもしれません"
+    ] = "上昇のはじまりかも"
     df.loc[
         (df["MA25_dis_type"].isin(["ちょい下", "やや下"])) &
         (df["level"].isin([4, 5])) &
@@ -147,6 +166,6 @@ def diagnose(df):
         (df["vol_type"].isin(["かなり減", "減ってる"])),
         "composite_type"
     ] = "大底からの一筋の光がみえます"
-    df["composite_type"] = df["composite_type"].fillna("中立（様子見）")
+    df["composite_type"] = df["composite_type"].fillna("ぼちぼちです。")
 
     return df

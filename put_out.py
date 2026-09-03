@@ -3,10 +3,15 @@ import pandas as pd
 def output(df):
     lines = []
 
+    if df.iloc[-1]["composite_type"] == "ぼちぼちです。" :
+        line = (
+            f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}{df.iloc[-1]["MA5_score_type"]}でしょう\n"
+        )
+    else :
+        line = (
+            f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}\n"
+        )        
 
-    line = (
-        f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}\n"
-    )
     lines.append(line)
 
     # 直近5日分を取り出す（足りないときはあるだけ）
