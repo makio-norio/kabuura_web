@@ -3,14 +3,16 @@ import pandas as pd
 def output(df):
     lines = []
 
-    if df.iloc[-1]["composite_type"] == "ぼちぼちです。" :
+    if df.iloc[-1]["composite_type"] in [ "凶","末吉","小吉","中吉","大吉"]:
         line = (
-            f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}{df.iloc[-1]["MA5_score_type"]}でしょう\n"
+            f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}"
+            f"）の運勢：{df.iloc[-1]["composite_type"]}　～{df.iloc[-1]["MA5_score_type"]}でしょう～\n"
         )
     else :
         line = (
             f"今日（{df.iloc[-1]['Date'].strftime('%m/%d')}）の運勢：{df.iloc[-1]["composite_type"]}\n"
         )        
+
 
     lines.append(line)
 

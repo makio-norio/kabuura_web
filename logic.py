@@ -28,6 +28,7 @@ def diagnose(df):
 
     # ma5
     df["MA5"] = df["Close"].rolling(5).mean()
+    # MA5の、過去3日間における1日あたり平均の変化率（%） ＝上向きか下向きか 
     df["MA5_slope_pct_3d"] = df["MA5"].pct_change(3) * 100 / 3 
     df["MA5_slope_std"] = df["MA5_slope_pct_3d"].rolling(10, min_periods=10).std()
     score = df["MA5_slope_pct_3d"] / df["MA5_slope_std"]
@@ -166,6 +167,19 @@ def diagnose(df):
         (df["vol_type"].isin(["かなり減", "減ってる"])),
         "composite_type"
     ] = "大底からの一筋の光がみえます"
-    df["composite_type"] = df["composite_type"].fillna("ぼちぼちです。")
+
+    conditions = [
+        (df["MA5_score_type"] == "強い下降"),
+        (df["MA5_score_type"] == "ゆるやか下降"),
+        (df["MA5_score_type"] == "よこよこ"),
+        (df["MA5_score_type"] == "ゆるやか上昇"),                        
+    ]
+    choices = [ "凶","末吉","小吉","中吉"]
+    fortune = pd.Series(
+        np.select(conditions, choices, default="大吉"),
+        index=df.index
+    )
+
+    df["composite_type"] = df["composite_type"].fillna(fortune)
 
     return df
